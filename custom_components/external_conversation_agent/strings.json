@@ -1,0 +1,14 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "External Conversation Agent",
+        "description": "Connect to an external conversation agent service.",
+        "data": {
+          "api_url": "API URL",
+          "timeout": "Request timeout (seconds)"
+        }
+      }
+    }
+  }
+}
