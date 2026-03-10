@@ -37,15 +37,11 @@ class ExternalConversationAgentConfigFlow(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow."""
-        return ExternalConversationAgentOptionsFlow(config_entry)
+        return ExternalConversationAgentOptionsFlow()
 
 
 class ExternalConversationAgentOptionsFlow(OptionsFlow):
     """Options flow for External Conversation Agent."""
-
-    def __init__(self, config_entry):
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         """Handle options."""
