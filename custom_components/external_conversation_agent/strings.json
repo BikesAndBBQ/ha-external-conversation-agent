@@ -10,5 +10,17 @@
         }
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "External Conversation Agent",
+        "description": "Update the agent configuration.",
+        "data": {
+          "api_url": "API URL",
+          "timeout": "Request timeout (seconds)"
+        }
+      }
+    }
   }
 }
