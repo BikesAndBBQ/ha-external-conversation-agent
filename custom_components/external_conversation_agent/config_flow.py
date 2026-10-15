@@ -6,8 +6,16 @@ import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
 
-from .const import CONF_API_URL, CONF_TIMEOUT, DEFAULT_TIMEOUT, DOMAIN
+from .const import CONF_API_TOKEN, CONF_API_URL, CONF_TIMEOUT, DEFAULT_TIMEOUT, DOMAIN
+
+# Masked in the form; sent as "Authorization: Bearer <token>" when set.
+TOKEN_SELECTOR = TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))
 
 
 class ExternalConversationAgentConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -29,6 +37,7 @@ class ExternalConversationAgentConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_API_URL): str,
                     vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): int,
+                    vol.Optional(CONF_API_TOKEN, default=""): TOKEN_SELECTOR,
                 }
             ),
         )
@@ -46,6 +55,7 @@ class ExternalConversationAgentOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input=None):
         """Handle options."""
         if user_input is not None:
+            user_input.setdefault(CONF_API_TOKEN, "")
             self.hass.config_entries.async_update_entry(
                 self.config_entry, data={**self.config_entry.data, **user_input}
             )
@@ -65,6 +75,16 @@ class ExternalConversationAgentOptionsFlow(OptionsFlow):
                             CONF_TIMEOUT, DEFAULT_TIMEOUT
                         ),
                     ): int,
+                    # suggested_value, not default: an emptied field then
+                    # clears the token instead of falling back to the old one.
+                    vol.Optional(
+                        CONF_API_TOKEN,
+                        description={
+                            "suggested_value": self.config_entry.data.get(
+                                CONF_API_TOKEN, ""
+                            )
+                        },
+                    ): TOKEN_SELECTOR,
                 }
             ),
         )

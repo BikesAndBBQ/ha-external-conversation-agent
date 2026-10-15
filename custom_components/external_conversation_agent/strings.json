@@ -6,7 +6,8 @@
         "description": "Connect to an external conversation agent service.",
         "data": {
           "api_url": "API URL",
-          "timeout": "Request timeout (seconds)"
+          "timeout": "Request timeout (seconds)",
+          "api_token": "API token (optional, sent as a Bearer token)"
         }
       }
     }
@@ -18,7 +19,8 @@
         "description": "Update the agent configuration.",
         "data": {
           "api_url": "API URL",
-          "timeout": "Request timeout (seconds)"
+          "timeout": "Request timeout (seconds)",
+          "api_token": "API token (optional, sent as a Bearer token)"
         }
       }
     }
