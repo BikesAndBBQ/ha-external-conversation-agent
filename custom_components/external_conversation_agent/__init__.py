@@ -10,6 +10,9 @@ accepts JSON:
         "device_id": "optional-device-id"
     }
 
+When an API token is configured, the request carries
+`Authorization: Bearer <token>`.
+
 And returns JSON:
 
     {
@@ -26,7 +29,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import intent
 from homeassistant.helpers.httpx_client import get_async_client
 
-from .const import CONF_API_URL, CONF_TIMEOUT, DEFAULT_TIMEOUT
+from .const import CONF_API_TOKEN, CONF_API_URL, CONF_TIMEOUT, DEFAULT_TIMEOUT
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -57,6 +60,7 @@ class ExternalConversationAgent(conversation.AbstractConversationAgent):
         self.entry = entry
         self.api_url = entry.data[CONF_API_URL].rstrip("/")
         self.timeout = entry.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
+        self.api_token = (entry.data.get(CONF_API_TOKEN) or "").strip()
 
     @property
     def supported_languages(self) -> list[str]:
@@ -68,6 +72,9 @@ class ExternalConversationAgent(conversation.AbstractConversationAgent):
     ) -> conversation.ConversationResult:
         """Forward conversation to external service and return result."""
         client = get_async_client(self.hass)
+        headers = {}
+        if self.api_token:
+            headers["Authorization"] = f"Bearer {self.api_token}"
         try:
             resp = await client.post(
                 f"{self.api_url}/api/conversation",
@@ -77,6 +84,7 @@ class ExternalConversationAgent(conversation.AbstractConversationAgent):
                     "language": user_input.language,
                     "device_id": user_input.device_id or "",
                 },
+                headers=headers,
                 timeout=float(self.timeout),
             )
             resp.raise_for_status()
